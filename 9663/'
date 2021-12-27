@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int pos[8];
+int flag[8];
+int flag_l[15];
+int flag_r[15];
+
+void	print_flag(void)
+{
+	int i;
+
+	i = 0;
+	while (i < 8)
+	{
+		printf("%2d", flag[i]);
+		i++;
+	}
+	putchar('\n');
+}
+
+void	print(void)
+{
+	int i;
+
+	i = 0;
+	while (i < 8)
+	{
+		printf("%2d", pos[i]);
+		i++;
+	}
+	putchar('\n');
+}
+
+void	set(int i)
+{
+	int j;
+
+	j = 0;
+	print_flag();
+	while (j < 8)
+	{
+		if (!flag[j] && !flag_l[i + j] && !flag_r[i + j - 7])
+		{
+			pos[i] = j;
+			if (i == 7)
+				print();
+			else
+			{
+				flag[j] = 1;
+				flag_l[i + j] = 1;
+				flag_r[i + j - 7] = 1;
+				set(i + 1);
+				flag[j] = 0;
+				flag_l[i + j] = 0;
+				flag_r[i + j - 7] = 0;
+			}
+		}
+		j++;
+	}
+}
+
+int	main(void)
+{
+	set(0);
+
+	return (0);
+}
