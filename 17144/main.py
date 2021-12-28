@@ -22,11 +22,13 @@ def diffusion(arr, R, C, x, y):
     fine_dust /= 5
     fine_dust = floor(fine_dust)
     can_diffusion_cnt = 0
+    i = 0
     while i < 4:
-        tmp_x = dx[i] + x
-        tmp_y = dy[i] + y
+        tmp_x = int(dx[i]) + int(x)
+        tmp_y = int(dy[i]) + int(y)
         if (tmp_x >= 0 and tmp_y >= 0) and (tmp_x < C and tmp_y < R) and arr[x][y] != -1:
-            arr[tmp_x][tmp_y] += fine_dust
+            tmp = int(arr[tmp_x][tmp_y]) + fine_dust
+            arr[tmp_x][tmp_y] = tmp
             can_diffusion_cnt += 1
         i += 1
     arr[x][y] = (5 - can_diffusion_cnt) * fine_dust
@@ -49,51 +51,98 @@ def fine_dust_diffusion(arr, R, C, fine_dust_list):
         y = fine_dust[1]
         diffusion(arr, R, C, x, y)
 
-def left(arr, R, C, location):
+def apply_left(arr, R, C, x, y, location_list):
+    i = 0
+    while x + i < C:
+        arr[x - i, y] = location_list.pop()
+        i += 1
+
+def apply_right(arr, R, C, x, y, location_list):
+    i = 0
+    while x + i < C:
+        arr[x + i, y] = location_list.pop()
+        i += 1
+
+def apply_up(arr, R, C, x, y, location_list):
+    i = 0
+    while y + i < R - 1:
+        arr[x, y + i] = location_list.pop()
+        i += 1
+
+def apply_down(arr, R, C, x, y, location_list):
+    i = 0
+    while y + i < R - 1:
+        arr[x, y + i] = location_list.pop()
+        i += 1
+
+def left(arr, R, C, x, y):
+    i = 0
     list = []
-    tmp = 0
+    while x + i < C:
+        list.append([x - i, y])
+        i += 1
+
     return list
 
 def right(arr, R, C, x, y):
-    recent_tmp = 0
-    last_tmp = 0
     i = 0
+    list = []
     while x + i < C:
-        
-#        if i == 0:
-#            last_tmp = arr[y][x + i]
-#            recent_tmp = arr[y][x + i + 1]
-#            arr[y][i + i] = 0
-#        else:
-#            arr[y][i + i] = last_tmp
-#            last_tmp = recent_tmp
-#            recent_tmp = arr[y][x + i + 1]
+        list.append([x + i, y])
         i += 1
 
-    location.append()
-    return location 
+    return list
 
-def up(arr, R, C, location):
-    tmp = 0
+def up(arr, R, C, x, y):
+    i = 0
+    list = []
+    while y + i < R - 1:
+        list.append([x, y + i])
+        i += 1
 
-def down(arr, R, C, location):
-    tmp = 0
+    return list
+
+def down(arr, R, C, x, y):
+    i = 0
+    list = []
+    while y + i < R - 1:
+        list.append([x, y + i])
+        i += 1
+
+    return list
+
+def apply_clearner(arr, R, C, x, y, location_list, dir):
+    if dir == COUNTERCLOCKWISE:
+        apply_right(arr, R, C, x + 1, y, location_list)
+        apply_up(arr, R, C, 0, R - 1, location_list)
+        apply_left(arr, R, C, C - 1, R - 1, location_list)
+        apply_down(arr, R, C, C - 1, y, location_list)
+    elif dir == CLOCKWISE:
+        apply_right(arr, R, C, x + 1, y)
+        apply_down(arr, R, C, C - 1, y)
+        apply_left(arr, R, C, C - 1, R - 1)
+        apply_up(arr, R, C, 0, R - 1)
+    
 
 def clearner(arr, R, C, x, y, dir):
     location_list = []
     #location.append([x + 1, y, 0] )
     if dir == COUNTERCLOCKWISE:
-        right(arr, R, C, x + 1, y)
-#        right(arr, R, C, location)
-#        location = right(arr, R, C, location)
-#        location = up(arr, R, C, location)
-#        location = left(arr, R, C, location)
-#        down(arr, R, C, location)
+        location_list.append(right(arr, R, C, x + 1, y))
+        location_list.append(up(arr, R, C, 0, R - 1))
+        location_list.append(left(arr, R, C, C - 1, R - 1))
+        location_list.append(down(arr, R, C, C - 1, y))
+        location_list.insert(0, 0)
+        apply_clearner(arr, R, C, x, y, location_list, dir)
+
     elif dir == CLOCKWISE:
-        location = right(arr, R, C, location)
-        location = down(arr, R, C, location)
-        location = left(arr, R, C, location)
-        up(arr, R, C, location)
+        location_list.append(right(arr, R, C, x + 1, y))
+        location_list.append(down(arr, R, C, C - 1, y))
+        location_list.append(left(arr, R, C, C - 1, R - 1))
+        location_list.append(up(arr, R, C, 0, R - 1))
+        location_list.insert(0, 0)
+        apply_clearner(arr, R, C, x, y, location_list, dir)
+        
 
 def air_cleaner(arr, R, C):
     i = 0
@@ -114,8 +163,8 @@ for i in range(R):
 i = 0
 while i < T:
     fine_dust_list = check_fine_dust(arr, R, C)
-    fine_dust_diffusion(arr, R, C)
-    #air_cleaner(arr, R, C)
+    fine_dust_diffusion(arr, R, C, fine_dust_list)
+    air_cleaner(arr, R, C)
     i += 1
 result = get_result(arr, R, C)
 print(result)
