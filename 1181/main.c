@@ -76,25 +76,19 @@ void	cmp_sort(char arr[20000][51], int n)
 	while (++index < n)
 	{
 		now_len = strlen(arr[index]);
-		printf("now_len : %d\n", now_len);
 		if (save_len == now_len && !start_flag)
 		{
-			printf("index : %d\n", index);
-			printf("same_len\n");
 			start = index - 1;
 			start_flag = 1;
 		}
 		else if (save_len != now_len && !end_flag && start_flag)
 		{
-			printf("save_len != now_len\n");
 			end = index - 1;
 			end_flag = 1;
 		}
 		save_len = now_len;
 		if (start_flag && end_flag)
 		{
-			printf("start : %d\n", start);
-			printf("end : %d\n", end);
 			i = start;
 			k = i;
 			j = end;
@@ -115,38 +109,6 @@ void	cmp_sort(char arr[20000][51], int n)
 			end_flag = 0;
 		}
 	}
-	/*
-	max_size = strlen(arr[n - 1]);
-	size = 0;
-	while (++size <= max_size)
-	{
-		start = 0;
-		end = 0;
-		i = -1; 
-		while (++i <= n)
-		{
-			if (size == strlen(arr[i]) && !start)
-				start = i;
-			else if (size != strlen(arr[i]) && start && !end)
-				end = i - 1;
-		}
-		j = start - 1;
-		l = 0;
-		while (++j < end)
-		{
-			k = start - 1;
-			while (++k < end - l)
-			{
-				if (strcmp(arr[k], arr[k + 1]) > 0)
-				{
-					swap(arr[k], arr[k + 1]);
-				}
-			}
-			l++;
-		}
-	}
-	*/
-
 }
 
 int		main(void)
