@@ -1,16 +1,20 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-void	swap(char *left, char *right)
+void		swap(char *left, char *right)
 {
-	char	temp[51] = {0, };
+	char	*temp;
+
+	temp = (char *)malloc(sizeof(char) * 51);
 
 	strcpy(temp, right);
 	strcpy(right, left);
 	strcpy(left, temp);
+	free(temp);
 }
 
-int		get_data(char arr[20000][51])
+int			get_data(char **arr)
 {
 	int		i;
 	int		n;
@@ -22,22 +26,7 @@ int		get_data(char arr[20000][51])
 	return n;
 }
 
-void	size_sort(char arr[20000][51], int n)
-{
-	int		i;
-	int		j;
-
-	i = -1;
-	while (++i < n)
-	{
-		j = -1;
-		while (++j < n - i - 1)
-			if (strlen(arr[j]) > strlen(arr[j + 1]))
-				swap(arr[j], arr[j + 1]);
-	}
-}
-
-void	print_result(char arr[20000][51], int n)
+void		print_result(char **arr, int n)
 {
 	int		i;
 
@@ -51,17 +40,15 @@ void	print_result(char arr[20000][51], int n)
 	}
 }
 
-void	cmp_sort(char arr[20000][51], int n)
+void		cmp_sort(char **arr, int n)
 {
 	int		i;
 	int		index;
 	int		j;
 	int		k;
 	int		l;
-	int		size;
 	int		start;
 	int		end;
-	int		max_size;
 	int		now_len;
 	int		save_len;
 	int		start_flag;
@@ -111,14 +98,65 @@ void	cmp_sort(char arr[20000][51], int n)
 	}
 }
 
+void		merges(char **arr, char **result, int left, int right) {
+	int		mid;
+	int		i;
+	int		j;
+	int		k;
+	int		l;
+
+	mid = (left + right) / 2;
+	i = left;
+	j = mid + 1;
+	k = left;
+	while (i <= mid && j <= right)
+	{
+		if (strlen(arr[i]) > strlen(arr[j]))
+			strcpy(result[k++], arr[j++]);
+		else
+			strcpy(result[k++], arr[i++]);
+	}
+	if (i > mid)
+		while (j <= right)
+			strcpy(result[k++], arr[j++]);
+	else
+		while (i <= mid)
+			strcpy(result[k++], arr[i++]);
+	l = left - 1;
+	while (++l <= right)
+		strcpy(arr[l], result[l]);
+}
+
+void		partition(char **arr, char **result, int left, int right) {
+	int		mid;
+
+	if (left < right)
+	{
+		mid = (left + right) / 2;
+		partition(arr, result, left, mid);
+		partition(arr, result, mid + 1, right);
+		merges(arr, result, left, right);
+	}
+}
+
 int		main(void)
 {
-	char	arr[20000][51] = {0, };
+	char	**arr;
+	char	**result;
+	int		i;
 	int		n;
 
+	arr = (char **)malloc(sizeof(char *) * 20000);
+	i = -1;
+	while (++i < 20000)
+		arr[i] = (char *)malloc(sizeof(char) * 51);
+
+	result= (char **)malloc(sizeof(char *) * 20000);
+	i = -1;
+	while (++i < 20000)
+		result[i] = (char *)malloc(sizeof(char) * 51);
 	n = get_data(arr);
-	size_sort(arr, n);
+	partition(arr, result, 0, n - 1);
 	cmp_sort(arr, n);
 	print_result(arr, n);
 }
-
