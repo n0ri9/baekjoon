@@ -14,17 +14,20 @@ void		print_result(t_str *arr, int n)
 {
 	int		i;
 
-	i = 0;
-	printf("%s\n", arr[i].str);
-	while (++i < n)
-		if (strcmp(arr[i - 1].str, arr[i].str) != 0)
-			printf("%s\n", arr[i].str);
+	printf("%s\n", arr[0].str);
+	for (i = 1; i < n; i++)
+	{
+			if (strcmp(arr[i-1].str, arr[i].str) != 0)
+				printf("%s\n", arr[i].str);
+	}
 }
 
 void		get_data(t_str *arr, int n)
 {
 	int		i;
+	int		j;
 	char	temp[51];
+	int		len;
 
 	i = -1;
 	while (++i < n)
@@ -63,7 +66,7 @@ void merge(t_str* arr, int first, int mid, int last) {
     else
         while (i <= mid)
             sort[k++] = arr[i++];
-	k = first - 1;
+	k = first -1;
 	while (++k <= last)
         arr[k] = sort[k];
 }
@@ -89,5 +92,4 @@ int		main(void)
 	arr = (t_str *)malloc(sizeof(t_str) * (n + 1));
 	get_data(arr, n);
 	merge_sort(arr, 0, n - 1);
-	print_result(arr, n);
 }
